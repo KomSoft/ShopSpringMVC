@@ -107,7 +107,7 @@ Licence URI: http://www.os-templates.com/template-terms
          <li><a href="${pageContext.request.contextPath}/home">Home</a></li>
 <!-- !!!! тут саме так page="/category", без "${pageContext.request.contextPath}"   -->
          <c:if test="${sessionScope.categories == null || sessionScope.categories.size() == 0}">
-            <jsp:include page="/category/get" />
+            <jsp:include page="/category/getall" />
          </c:if>
 
          <c:forEach items="${sessionScope.categories}" var="cat">

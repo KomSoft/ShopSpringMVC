@@ -26,12 +26,6 @@ public class UserRegisteringData extends UserModel {
         this.savedPassword = savedPassword;
     }
 
-/*
-    private void setEncryptedPassword(String password) {
-        encryptedPassword = password;
-    }
-
-*/
 //  Compare savedPassword with encryptedPassword. Call only after isPasswordCorrect(String candidatePassword)
 //    Can use to check if user has  all fields correct
     public boolean isPasswordCorrect() {
@@ -48,7 +42,6 @@ public class UserRegisteringData extends UserModel {
                 super.encryptedPassword = savedPassword;
             }
         } catch (IllegalArgumentException e) {
-//            isEquals = false;
             e.printStackTrace();
         }
         return isEquals;

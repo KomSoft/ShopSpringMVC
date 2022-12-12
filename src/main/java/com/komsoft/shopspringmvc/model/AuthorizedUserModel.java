@@ -22,18 +22,6 @@ public class AuthorizedUserModel {
     private static ArrayList<String> errors;
     private boolean isCorrect;
 
-    public AuthorizedUserModel() {
-        login = null;
-        password = null;
-        fullName = null;
-        region = null;
-        gender = null;
-        comment = null;
-        agreement = null;
-        isCorrect = false;
-        errors = null;
-    }
-
     public AuthorizedUserModel(HttpServletRequest request) {
         this.checkUserRegisteringData(request);
     }

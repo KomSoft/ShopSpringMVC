@@ -23,7 +23,7 @@
         <tr>
             <td>Price: ${product.key.price} UAH</td>
             <td>
-                <form action="${pageContext.request.contextPath}/cart/delete" method="delete" >
+                <form action="${pageContext.request.contextPath}/cart/delete" method="post" >
                     <input type="hidden" name="id" value="${product.key.id}" />
                     <input type="hidden" name="delete" value="" />
                     <input type="button" value="-" onClick="changeCount(${product.key.id}, -1)"/>
@@ -54,7 +54,9 @@
             <td width="100" >${totalPrice}</td>
         </tr>
     </table>
-    <center><input type="submit" value="Pay now" /></center>
+    <c:if test="${totalPrice > 0}" >
+        <center><input type="submit" value="Pay now" /></center>
+    </c:if>
 </form>
 
 <script>
