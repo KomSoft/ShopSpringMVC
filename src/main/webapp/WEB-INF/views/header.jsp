@@ -93,7 +93,7 @@ Licence URI: http://www.os-templates.com/template-terms
                              is empty
                           </c:when>
                           <c:otherwise>
-                              has (${sessionScope.userCart.size()}) item(s)
+                              has ${sessionScope.userCart.size()} item(s)
                           </c:otherwise>
                       </c:choose>
                   </p>

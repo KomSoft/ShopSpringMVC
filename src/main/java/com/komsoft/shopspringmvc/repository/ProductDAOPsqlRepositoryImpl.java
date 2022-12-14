@@ -1,12 +1,9 @@
 package com.komsoft.shopspringmvc.repository;
 
-import com.komsoft.shopspringmvc.dto.ProductDto;
 import com.komsoft.shopspringmvc.exception.DataBaseException;
-import com.komsoft.shopspringmvc.exception.ValidationException;
 import com.komsoft.shopspringmvc.factory.DAOFactory;
 import com.komsoft.shopspringmvc.model.CategoryModel;
 import com.komsoft.shopspringmvc.model.ProductModel;
-import com.komsoft.shopspringmvc.util.ProductConverter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,72 +22,83 @@ public class ProductDAOPsqlRepositoryImpl implements ProductDAO {
         this.daoFactory = daoFactory;
     }
 
-    public List<ProductDto> getAllProduct(String category) throws DataBaseException, ValidationException {
-//    public List<Product> getAllProduct(String category) throws DataBaseException, ValidationException {
-        List<ProductDto> result;
-        String request;
+    public List<ProductModel> getAll() throws DataBaseException {
+        List<ProductModel> result;
         try {
-            request = category == null || category.isEmpty() ? GET_ALL_PRODUCT : GET_ALL_PRODUCT_BY_CATEGORY;
             Connection connection = daoFactory.getConnection();
-            PreparedStatement statement = connection.prepareStatement(request);
-            if (request.equalsIgnoreCase(GET_ALL_PRODUCT_BY_CATEGORY)) {
-                int categoryIndex = Integer.parseInt(category);
-                statement.setInt(1, categoryIndex);
-            }
+            PreparedStatement statement = connection.prepareStatement(GET_ALL_PRODUCT);
             ResultSet products = statement.executeQuery();
             result = new ArrayList<>();
             while (products.next()) {
-                result.add(new ProductConverter().convertProductToDto(new ProductModel()
+                result.add(new ProductModel()
                         .setId(products.getLong("p_id"))
                         .setName(products.getString("p_name"))
                         .setDescription(products.getString("description"))
                         .setPrice(products.getDouble("price"))
                         .setCategory(new CategoryModel().setId(products.getLong("c_id"))
-                                                .setName(products.getString("c_name")))));
+                        .setName(products.getString("c_name"))));
             }
             products.close();
             statement.close();
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage());
-        } catch (NumberFormatException e) {
-            throw new ValidationException(String.format("Oooops! <br>Invalid category: %s, try another", category));
         } finally {
             daoFactory.closeConnection();
         }
         return result;
     }
 
-    public ProductDto getProductById(String id) throws DataBaseException, ValidationException {
-        ProductDto productDto = null;
-        String request;
-        if (id == null) {
-            throw new ValidationException("Oooops! <br>Product id no present");
-        }
+    public List<ProductModel> getByCategory(long category) throws DataBaseException {
+        List<ProductModel> result;
         try {
-            long productId = Long.parseLong(id);
             Connection connection = daoFactory.getConnection();
-            PreparedStatement statement = connection.prepareStatement(GET_PRODUCT_BY_ID);
-            statement.setLong(1, productId);
+            PreparedStatement statement = connection.prepareStatement(GET_ALL_PRODUCT_BY_CATEGORY);
+            statement.setInt(1, (int) category);
             ResultSet products = statement.executeQuery();
-            if (products.next()) {
-                productDto = new ProductConverter().convertProductToDto(new ProductModel()
+            result = new ArrayList<>();
+            while (products.next()) {
+                result.add(new ProductModel()
                         .setId(products.getLong("p_id"))
                         .setName(products.getString("p_name"))
                         .setDescription(products.getString("description"))
                         .setPrice(products.getDouble("price"))
                         .setCategory(new CategoryModel().setId(products.getLong("c_id"))
-                                                .setName(products.getString("c_name"))));
+                        .setName(products.getString("c_name"))));
             }
             products.close();
             statement.close();
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage());
-        } catch (NumberFormatException e) {
-            throw new ValidationException(String.format("Oooops! <br>Invalid product id: %s, try another", id));
         } finally {
             daoFactory.closeConnection();
         }
-        return productDto;
+        return result;
+    }
+
+    public ProductModel getById(long id) throws DataBaseException {
+        ProductModel product = null;
+        try {
+            Connection connection = daoFactory.getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_PRODUCT_BY_ID);
+            statement.setLong(1, id);
+            ResultSet products = statement.executeQuery();
+            if (products.next()) {
+                product = new ProductModel()
+                        .setId(products.getLong("p_id"))
+                        .setName(products.getString("p_name"))
+                        .setDescription(products.getString("description"))
+                        .setPrice(products.getDouble("price"))
+                        .setCategory(new CategoryModel().setId(products.getLong("c_id"))
+                        .setName(products.getString("c_name")));
+            }
+            products.close();
+            statement.close();
+        } catch (SQLException e) {
+            throw new DataBaseException(e.getMessage());
+        } finally {
+            daoFactory.closeConnection();
+        }
+        return product;
     }
 
 }

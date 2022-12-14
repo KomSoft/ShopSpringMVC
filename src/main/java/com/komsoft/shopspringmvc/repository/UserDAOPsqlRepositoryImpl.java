@@ -3,8 +3,8 @@ package com.komsoft.shopspringmvc.repository;
 import com.komsoft.shopspringmvc.exception.DataBaseException;
 import com.komsoft.shopspringmvc.exception.ValidationException;
 import com.komsoft.shopspringmvc.factory.DAOFactory;
-import com.komsoft.shopspringmvc.model.AuthorizedUserModel;
-import com.komsoft.shopspringmvc.model.UserRegisteringData;
+import com.komsoft.shopspringmvc.model.UserAuthorizationData;
+import com.komsoft.shopspringmvc.model.RegisteredUser;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,12 +46,12 @@ public class UserDAOPsqlRepositoryImpl implements UserDAO {
     }
 
     public String getFullNameByLogin(String login) throws DataBaseException {
-        UserRegisteringData user = getUserByLogin(login);
+        RegisteredUser user = getUserByLogin(login);
         return user == null ? null : user.getFullName();
     }
 
-    public UserRegisteringData getUserByLogin(String login) throws DataBaseException {
-        UserRegisteringData user = null;
+    public RegisteredUser getUserByLogin(String login) throws DataBaseException {
+        RegisteredUser user = null;
         if (login == null || login.trim().length() == 0) {
             throw new DataBaseException("[UserRepository] Login is null or empty");
         }
@@ -66,7 +66,7 @@ public class UserDAOPsqlRepositoryImpl implements UserDAO {
                 String region = resultSet.getString("region");
                 String gender = resultSet.getString("gender");
                 String comment = resultSet.getString("comment");
-                user = new UserRegisteringData(login, fullName, region, gender, comment);
+                user = new RegisteredUser(login, fullName, region, gender, comment);
                 String savedPassword = resultSet.getString("password");
                 user.setSavedPassword(savedPassword);
             }
@@ -80,9 +80,9 @@ public class UserDAOPsqlRepositoryImpl implements UserDAO {
         }
     }
 
-    public UserRegisteringData saveUser(UserRegisteringData user) throws DataBaseException, ValidationException {
-        UserRegisteringData savedUser = null;
-        if (AuthorizedUserModel.isUserRegisteringDataCorrect(user)) {
+    public RegisteredUser saveUser(RegisteredUser user) throws DataBaseException, ValidationException {
+        RegisteredUser savedUser = null;
+        if (UserAuthorizationData.isUserRegisteringDataCorrect(user)) {
 //        check userRegisteringData
             try {
                 String fullName = this.getFullNameByLogin(user.getLogin());

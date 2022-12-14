@@ -1,7 +1,6 @@
 package com.komsoft.shopspringmvc.repository;
 
 import com.komsoft.shopspringmvc.exception.DataBaseException;
-import com.komsoft.shopspringmvc.exception.ValidationException;
 import com.komsoft.shopspringmvc.factory.DAOFactory;
 import com.komsoft.shopspringmvc.model.CategoryModel;
 
@@ -21,7 +20,7 @@ public class CategoryDAOPsqlRepositoryImpl implements CategoryDAO {
         this.daoFactory = daoFactory;
     }
 
-    public List<CategoryModel> getAllCategory() throws DataBaseException {
+    public List<CategoryModel> getAll() throws DataBaseException {
         List<CategoryModel> result = null;
         try {
             Connection connection = daoFactory.getConnection();
@@ -43,16 +42,12 @@ public class CategoryDAOPsqlRepositoryImpl implements CategoryDAO {
         return result;
     }
 
-    public CategoryModel getCategory(String category) throws DataBaseException, ValidationException {
+    public CategoryModel getById(long category) throws DataBaseException {
         CategoryModel result = null;
         try {
-            if (category == null) {
-                throw new ValidationException("Oooops! <br>Category is not defined");
-            }
             Connection connection = daoFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement(GET_ALL_CATEGORY_BY_ID);
-            long categoryIndex = Long.parseLong(category);
-            statement.setLong(1, categoryIndex);
+            statement.setLong(1, category);
             ResultSet categories = statement.executeQuery();
             result = new CategoryModel();
             if (categories.next()) {
@@ -60,14 +55,12 @@ public class CategoryDAOPsqlRepositoryImpl implements CategoryDAO {
                         .setId(categories.getLong("id"))
                         .setName(categories.getString("name"));
             } else {
-                throw new DataBaseException(String.format("Oooops! <br>Category: %s not exists", category));
+                throw new DataBaseException(String.format("Oooops! <br>Category: %d not exists", category));
             }
             categories.close();
             statement.close();
         } catch (SQLException e) {
             throw new DataBaseException(e.getMessage());
-        } catch (NumberFormatException e) {
-            throw new ValidationException(String.format("Oooops! <br>Invalid category: %s, try another", category));
         } finally {
             daoFactory.closeConnection();
         }

@@ -47,7 +47,8 @@ public class PostgreSQLDAOFactory extends DAOFactory {
 
     @Override
     public ProductDAO getProductDAO() {
-        return new ProductDAOPsqlRepositoryImpl(this);
+//        return new ProductDAOPsqlRepositoryImpl(this);
+        return new ProductEntityManager();
     }
 
     public Connection getConnection() throws DataBaseException {

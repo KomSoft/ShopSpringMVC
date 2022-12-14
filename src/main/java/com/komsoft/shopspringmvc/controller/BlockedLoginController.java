@@ -3,18 +3,13 @@ package com.komsoft.shopspringmvc.controller;
 import com.komsoft.shopspringmvc.exception.DataBaseException;
 import com.komsoft.shopspringmvc.service.UserService;
 import com.komsoft.shopspringmvc.util.Header;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.lang.invoke.MethodHandles;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -78,8 +73,8 @@ public class BlockedLoginController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getLoginForm(HttpServletRequest request) {
-        HttpSession session = request.getSession();
+    public String getLoginForm(HttpSession session) {
+//        HttpSession session = request.getSession();
         String view = Header.LOGIN_PAGE;
 //      if user is authenticated - show Welcome else show login form
         if (session.getAttribute(Header.AUTHENTICATED_USER_KEY) != null) {

@@ -3,9 +3,8 @@ package com.komsoft.shopspringmvc.controller;
 import com.komsoft.shopspringmvc.dto.ProductDto;
 import com.komsoft.shopspringmvc.exception.DataBaseException;
 import com.komsoft.shopspringmvc.exception.ValidationException;
-import com.komsoft.shopspringmvc.factory.DAOFactory;
 import com.komsoft.shopspringmvc.model.ProductModel;
-import com.komsoft.shopspringmvc.repository.ProductDAO;
+import com.komsoft.shopspringmvc.service.ProductService;
 import com.komsoft.shopspringmvc.util.Header;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,10 +21,10 @@ import java.util.Map;
 @RequestMapping("/cart")
 public class CartController {
 
-    private final DAOFactory daoFactory;
+    private final ProductService productService;
 
-    public CartController() {
-        this.daoFactory = DAOFactory.getInstance();
+    public CartController(ProductService productService) {
+        this.productService = productService;
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -34,7 +33,7 @@ public class CartController {
         Map<ProductDto, Integer> cart = (Map<ProductDto, Integer>) session.getAttribute(Header.USER_CART);
         if (cart == null || cart.size() == 0) {
             view = Header.INFO_PAGE;
-            modelMap.addAttribute(Header.MESSAGE, "Your Cart is empty. First put items in.");
+            modelMap.addAttribute(Header.MESSAGE, "Your Cart is empty. First put items in if you are logged in.");
         } else {
             view = Header.CART_PAGE;
         }
@@ -57,8 +56,7 @@ public class CartController {
                     session.setAttribute(Header.USER_CART, new HashMap<ProductModel, Integer>());
                 }
                 Map<ProductDto, Integer> cart = (Map<ProductDto, Integer>) session.getAttribute(Header.USER_CART);
-                ProductDAO productDAO = daoFactory.getProductDAO();
-                ProductDto product = productDAO.getProductById(productId);
+                ProductDto product = productService.getById(productId);
                 if (product != null) {
                     int quantity = cart.get(product) == null ? 0 : cart.get(product);
                     quantity += count;
@@ -83,7 +81,7 @@ public class CartController {
         try {
             if (session.getAttribute(Header.USER_CART) != null) {
                 Map<ProductDto, Integer> cart = (Map<ProductDto, Integer>) session.getAttribute(Header.USER_CART);
-                ProductDto product = daoFactory.getProductDAO().getProductById(productId);
+                ProductDto product = productService.getById(productId);
                 if (product != null) {
                     cart.remove(product);
                 }

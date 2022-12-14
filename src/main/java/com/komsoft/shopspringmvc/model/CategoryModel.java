@@ -1,6 +1,12 @@
 package com.komsoft.shopspringmvc.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "category")
 public class CategoryModel {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
 

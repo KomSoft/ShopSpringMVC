@@ -2,10 +2,9 @@ package com.komsoft.shopspringmvc.controller;
 
 import com.komsoft.shopspringmvc.exception.DataBaseException;
 import com.komsoft.shopspringmvc.exception.ValidationException;
-import com.komsoft.shopspringmvc.factory.DAOFactory;
-import com.komsoft.shopspringmvc.model.AuthorizedUserModel;
-import com.komsoft.shopspringmvc.model.UserRegisteringData;
-import com.komsoft.shopspringmvc.repository.UserDAO;
+import com.komsoft.shopspringmvc.model.UserAuthorizationData;
+import com.komsoft.shopspringmvc.model.RegisteredUser;
+import com.komsoft.shopspringmvc.service.UserService;
 import com.komsoft.shopspringmvc.util.Header;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -21,20 +20,19 @@ import java.util.ResourceBundle;
 @RequestMapping("/registration")
 public class RegistrationController {
     private final ResourceBundle bundle = ResourceBundle.getBundle("messages", Locale.UK);
-    private final DAOFactory daoFactory;
+    private final UserService userService;
 
-    public RegistrationController() {
-        this.daoFactory = DAOFactory.getInstance();
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public String registerUser(ModelMap modelMap, HttpServletRequest request) {
-        AuthorizedUserModel checkedUser = new AuthorizedUserModel(request);
+        UserAuthorizationData checkedUser = new UserAuthorizationData(request);
         String view;
         if (checkedUser.isCorrect()) {
             try {
-                UserDAO userDAO = daoFactory.getUserDAO();
-                UserRegisteringData savedUser = userDAO.saveUser(checkedUser.getUserRegisteringData());
+                RegisteredUser savedUser = userService.saveUser(checkedUser.getUserRegisteringData());
                 view = Header.INFO_PAGE;
                 modelMap.addAttribute(Header.MESSAGE, String.format(bundle.getString("registerCompleted"), savedUser.getFullName()));
 //          Register completed
@@ -47,7 +45,7 @@ public class RegistrationController {
             }
         } else {
             view = Header.REGISTRATION_PAGE;
-//  TODO why session ?
+//  have to put in session to correct work
             request.getSession().setAttribute("errors", checkedUser.getErrors());
         }
         return view;

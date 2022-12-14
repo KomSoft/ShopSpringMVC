@@ -2,15 +2,15 @@ package com.komsoft.shopspringmvc.model;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
-public class UserRegisteringData extends UserModel {
+public class RegisteredUser extends UserModel {
 
     private String savedPassword;
 
-    public UserRegisteringData(String login, String password, String fullName, String region, String gender, String comment) {
+    public RegisteredUser(String login, String password, String fullName, String region, String gender, String comment) {
         super(login, password, fullName, region, gender, comment);
     }
 
-    public UserRegisteringData(String login, String fullName, String region, String gender, String comment) {
+    public RegisteredUser(String login, String fullName, String region, String gender, String comment) {
         super(login, fullName, region, gender, comment);
     }
 //    Це збочення, але поки так. Щоб не видавати дійсний пароль та була можливість порівняти

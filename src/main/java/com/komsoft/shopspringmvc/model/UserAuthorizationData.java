@@ -5,32 +5,24 @@ import com.komsoft.shopspringmvc.exception.ValidationException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
-public class AuthorizedUserModel {
+public class UserAuthorizationData {
     private final String OK_MESSAGE = "<font color='#00FF00'>&#10004;</font>";
     private static final String REGEXP_EMAIL = "^\\w+([\\.\\-_]?\\w+)*@(\\w+[\\.\\-_]?)+\\.[\\w+]{2,4}$";
     //      include lower, upper case letters, and minimum one 1 digit
     private static final String REGEXP_PASSWORD = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*\\d)(?!.*[\\s]).{8,}$";
     //      include lower, upper case letters, one special character #?!@$%^*&- and minimum 2 digits
     //    private static final String REGEXP_PASSWORD = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*\\d[^\\d]?\\d)(?=.*?[#?!@$%^*&\\-])(?!.*[\\s]).{8,}$";
-    private String login;
-    private String password;
+    private final String login;
+    private final String password;
     private String fullName;
-    private String region;
-    private String gender;
-    private String comment;
-    private String agreement;
-    private static ArrayList<String> errors;
+    private final String region;
+    private final String gender;
+    private final String comment;
+    private final String agreement;
+    private ArrayList<String> errors = new ArrayList<>();
     private boolean isCorrect;
 
-    public AuthorizedUserModel(HttpServletRequest request) {
-        this.checkUserRegisteringData(request);
-    }
-
-    private static boolean isLoginCorrect(String email) {
-        return email.matches(REGEXP_EMAIL);
-    }
-
-    public UserRegisteringData checkUserRegisteringData(HttpServletRequest request) {
+    public UserAuthorizationData(HttpServletRequest request) {
         login = request.getParameter("login");
         password = request.getParameter("password");
         String rePassword = request.getParameter("rePassword");
@@ -40,7 +32,7 @@ public class AuthorizedUserModel {
         comment = request.getParameter("comment");
         agreement = request.getParameter("agreement");
         isCorrect = true;
-        errors = new ArrayList<>();
+//        errors = new ArrayList<>();
         if (login == null || login.isEmpty()) {
             isCorrect = false;
             errors.add("<font color='#FF0000'>Login is empty!</font>");
@@ -110,10 +102,13 @@ public class AuthorizedUserModel {
             isCorrect = false;
             errors.add("<font color='#FF0000'>Please mark 'Glory to Ukraine'</font>");
         }
-        return getUserRegisteringData();
     }
 
-    public static boolean isUserRegisteringDataCorrect(UserRegisteringData user) throws ValidationException {
+    private static boolean isLoginCorrect(String email) {
+        return email.matches(REGEXP_EMAIL);
+    }
+
+    public static boolean isUserRegisteringDataCorrect(RegisteredUser user) throws ValidationException {
         if (user == null) {
             throw new ValidationException("[CheckUser] Object User is null");
         }
@@ -138,9 +133,9 @@ public class AuthorizedUserModel {
         return true;
     }
 
-    public UserRegisteringData getUserRegisteringData() {
+    public RegisteredUser getUserRegisteringData() {
         if (isCorrect) {
-            return new UserRegisteringData(login, password, fullName, region, gender, comment);
+            return new RegisteredUser(login, password, fullName, region, gender, comment);
         } else {
             return null;
         }
@@ -152,26 +147,6 @@ public class AuthorizedUserModel {
 
     public String getPassword() {
         return password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getRegion() {
-        return region;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public String getAgreement() {
-        return agreement;
     }
 
     public ArrayList<String> getErrors() {

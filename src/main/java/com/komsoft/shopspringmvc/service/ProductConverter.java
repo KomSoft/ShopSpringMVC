@@ -1,4 +1,4 @@
-package com.komsoft.shopspringmvc.util;
+package com.komsoft.shopspringmvc.service;
 
 import com.komsoft.shopspringmvc.dto.ProductDto;
 import com.komsoft.shopspringmvc.model.ProductModel;
